@@ -24,43 +24,6 @@ func (a *Access) CheckAPI() error {
 	return nil
 }
 
-// Bootstrap is an obsolete hass struct, seems to be removed
-type Bootstrap struct {
-	Config struct {
-		Components      []string `json:"components"`
-		Latitude        float64  `json:"latitude"`
-		Longitude       float64  `json:"longitude"`
-		LocationName    string   `json:"location_name"`
-		TemperatureUnit string   `json:"temperature_unit"`
-		Timezone        string   `json:"time_zone"`
-		Version         string   `json:"version"`
-	} `json:"config"`
-	Events []struct {
-		Event         string `json:"event"`
-		ListenerCount int    `json:"listener_count"`
-	} `json:"events"`
-	Services []struct {
-		Domain   string `json:"domain"`
-		Services map[string]struct {
-			Description string      `json:"description"`
-			Fields      interface{} `json:"fields"`
-		} `json:"services"`
-	} `json:"services"`
-	States []struct {
-		Attributes struct {
-			Auto         bool     `json:"auto"`
-			EntityID     []string `json:"entity_id"`
-			FriendlyName string   `json:"friendly_name"`
-			Hidden       bool     `json:"hidden"`
-			Order        int      `json:"order"`
-		} `json:"attributes"`
-		EntityID    string    `json:"entity_id"`
-		LastChanged time.Time `json:"last_changed"`
-		LastUpdated time.Time `json:"last_updated"`
-		State       string    `json:"state"`
-	} `json:"states"`
-}
-
 // State is the struct for an object state
 type State struct {
 	Attributes struct {
@@ -83,17 +46,6 @@ type States []State
 type StateChange struct {
 	EntityID string `json:"entityid"`
 	State    string `json:"state"`
-}
-
-// Bootstrap returns the bootstrap information of the system (obsolete)
-func (a *Access) Bootstrap() (Bootstrap, error) {
-	var bootstrap Bootstrap
-	err := a.httpGet("/api/bootstrap", &bootstrap)
-	if err != nil {
-		return Bootstrap{}, err
-	}
-
-	return bootstrap, nil
 }
 
 // FireEvent fires an event.
