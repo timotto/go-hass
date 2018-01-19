@@ -8,6 +8,7 @@ import (
 	"time"
 )
 
+// Access is the access and credentials for the API
 type Access struct {
 	host     string
 	password string
@@ -17,6 +18,12 @@ type Access struct {
 // Home Assistant system.
 func NewAccess(host, password string) *Access {
 	return &Access{host, password}
+}
+
+// SetAccess changes login credentials for API access
+func (a *Access) SetAccess(host, password string) {
+	a.host = host
+	a.password = password
 }
 
 func (a *Access) httpGet(path string, v interface{}) error {
