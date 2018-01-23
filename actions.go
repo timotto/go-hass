@@ -48,17 +48,21 @@ type StateChange struct {
 	State    string `json:"state"`
 }
 
+// GetDomain parses the Entity ID and returns the domain
+func (s *State) GetDomain() string {
+	return strings.TrimSuffix(strings.SplitAfter(s.EntityID, ".")[0], ".")
+}
+
 // FireEvent fires an event.
 func (a *Access) FireEvent(eventType string, eventData interface{}) error {
 	return a.httpPost("/api/events/"+eventType, eventData)
 }
 
 // CallService calls a service with a domain, service, and entity id.
-func (a *Access) CallService(domain, service string, entityID string) error {
+func (a *Access) CallService(domain, service, entityID string) error {
 	serviceData := struct {
 		EntityID string `json:"entity_id"`
 	}{entityID}
-
 	return a.httpPost("/api/services/"+domain+"/"+service, serviceData)
 }
 
@@ -89,9 +93,8 @@ func (a *Access) FilterStates(domains ...string) (s States, err error) {
 		return States{}, err
 	}
 	for d := range list {
-		dom := strings.TrimSuffix(strings.SplitAfter(list[d].EntityID, ".")[0], ".")
 		for _, fdom := range domains {
-			if fdom == dom {
+			if fdom == list[d].GetDomain() {
 				s = append(s, list[d])
 			}
 		}
