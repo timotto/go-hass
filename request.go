@@ -8,16 +8,29 @@ import (
 	"time"
 )
 
+// Doer represents an http client that can "Do" a request
+type Doer interface {
+	Do(req *http.Request) (*http.Response, error)
+}
+
 // Access is the access and credentials for the API
 type Access struct {
 	host     string
 	password string
+	token    string
+	client   Doer
 }
 
 // NewAccess returns a new *Access to be used to interface with the
 // Home Assistant system.
 func NewAccess(host, password string) *Access {
-	return &Access{host, password}
+	return &Access{
+		host:     host,
+		password: password,
+		client: &http.Client{
+			Timeout: time.Second * 10,
+		},
+	}
 }
 
 // SetAccess changes login credentials for API access
@@ -26,22 +39,35 @@ func (a *Access) SetAccess(host, password string) {
 	a.password = password
 }
 
-func (a *Access) httpGet(path string, v interface{}) error {
-	client := &http.Client{
-		Timeout: time.Second * 10,
-	}
+// SetClient allows you to specify a different http client than the default
+func (a *Access) SetClient(client Doer) {
+	a.client = client
+}
 
+// SetToken sets the X-HASSIO-KEY header
+func (a *Access) SetToken(token string) {
+	a.token = token
+}
+
+func (a *Access) httpGet(path string, v interface{}) error {
 	req, err := http.NewRequest("GET", a.host+path, nil)
 	if err != nil {
 		return err
 	}
-	req.Header.Set("x-ha-access", a.password)
+
+	if a.password != "" {
+		req.Header.Set("x-ha-access", a.password)
+	}
+
+	if a.token != "" {
+		req.Header.Set("X-HASSIO-KEY", a.token)
+	}
 
 	success := false
 	for i := 0; i < 3; i++ {
 		func() {
 			var resp *http.Response
-			resp, err = client.Do(req)
+			resp, err = a.client.Do(req)
 			if err != nil {
 				return
 			}
@@ -89,18 +115,20 @@ func (a *Access) httpPost(path string, v interface{}) error {
 		}
 	}
 
-	client := &http.Client{
-		Timeout: time.Second * 10,
+	if a.password != "" {
+		req.Header.Set("x-ha-access", a.password)
 	}
 
-	req.Header.Set("x-ha-access", a.password)
+	if a.token != "" {
+		req.Header.Set("X-HASSIO-KEY", a.token)
+	}
 
 	var err error
 	success := false
 	for i := 0; i < 3; i++ {
 		func() {
 			var resp *http.Response
-			resp, err = client.Do(req)
+			resp, err = a.client.Do(req)
 			if err != nil {
 				return
 			}
