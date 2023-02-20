@@ -23,7 +23,7 @@ func (a *Access) ListenEvents() (*EventListener, error) {
 		return nil, err
 	}
 
-	req.Header.Set("x-ha-access", a.password)
+	a.authorizeRequest(req)
 
 	resp, err := client.Do(req)
 	if err != nil {
