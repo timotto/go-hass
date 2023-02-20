@@ -26,18 +26,14 @@ func (a *Access) CheckAPI() error {
 
 // State is the struct for an object state
 type State struct {
-	Attributes struct {
-		Auto         bool   `json:"auto"`
-		FriendlyName string `json:"friendly_name"`
-		Hidden       bool   `json:"hidden"`
-		Order        int    `json:"order"`
-		AssumedState bool   `json:"assumed_state"`
-	} `json:"attributes"`
-	EntityID    string    `json:"entity_id"`
-	LastChanged time.Time `json:"last_changed"`
-	LastUpdated time.Time `json:"last_updated"`
-	State       string    `json:"state"`
+	Attributes  StateAttributes `json:"attributes"`
+	EntityID    string          `json:"entity_id"`
+	LastChanged time.Time       `json:"last_changed"`
+	LastUpdated time.Time       `json:"last_updated"`
+	State       string          `json:"state"`
 }
+
+type StateAttributes map[string]interface{}
 
 // States is an array of State objects
 type States []State
