@@ -82,6 +82,10 @@ func (e *EventListener) NextStateChanged() (StateChangedEvent, error) {
 		if len(line) > 6 && string(line[:6]) == "data: " {
 			jsonData := line[6:]
 
+			if string(jsonData) == "ping\n" {
+				continue
+			}
+
 			var eventTypeFinder struct {
 				EventType string `json:"event_type"`
 			}
