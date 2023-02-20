@@ -2,6 +2,7 @@ package hass
 
 import (
 	"bufio"
+	"context"
 	"encoding/json"
 	"io"
 	"net/http"
@@ -14,16 +15,20 @@ type EventListener struct {
 }
 
 func (a *Access) ListenEvents() (*EventListener, error) {
-	client := &http.Client{
-		Timeout: time.Second * 10,
-	}
+	ctx, _ := context.WithTimeout(context.Background(), time.Second*10)
 
-	req, err := http.NewRequest("GET", a.host+"/api/stream", nil)
+	return a.ListenEventsWithContext(ctx)
+}
+
+func (a *Access) ListenEventsWithContext(ctx context.Context) (*EventListener, error) {
+	client := http.DefaultClient
+
+	req, err := http.NewRequestWithContext(ctx, "GET", a.host+"/api/stream", nil)
 	if err != nil {
 		return nil, err
 	}
 
-	req.Header.Set("x-ha-access", a.password)
+	a.authorizeRequest(req)
 
 	resp, err := client.Do(req)
 	if err != nil {
@@ -81,6 +86,10 @@ func (e *EventListener) NextStateChanged() (StateChangedEvent, error) {
 
 		if len(line) > 6 && string(line[:6]) == "data: " {
 			jsonData := line[6:]
+
+			if string(jsonData) == "ping\n" {
+				continue
+			}
 
 			var eventTypeFinder struct {
 				EventType string `json:"event_type"`

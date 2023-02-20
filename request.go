@@ -64,17 +64,7 @@ func (a *Access) httpGet(path string, v interface{}) error {
 		return err
 	}
 
-	if a.password != "" {
-		req.Header.Set("x-ha-access", a.password)
-	}
-
-	if a.token != "" {
-		req.Header.Set("X-HASSIO-KEY", a.token)
-	}
-
-	if a.bearertoken != "" {
-		req.Header.Set("Authorization", a.bearertoken)
-	}
+	a.authorizeRequest(req)
 
 	success := false
 	for i := 0; i < 3; i++ {
@@ -128,17 +118,7 @@ func (a *Access) httpPost(path string, v interface{}) error {
 		}
 	}
 
-	if a.password != "" {
-		req.Header.Set("x-ha-access", a.password)
-	}
-
-	if a.token != "" {
-		req.Header.Set("X-HASSIO-KEY", a.token)
-	}
-
-	if a.bearertoken != "" {
-		req.Header.Set("Authorization", a.bearertoken)
-	}
+	a.authorizeRequest(req)
 
 	var err error
 	success := false
@@ -161,4 +141,18 @@ func (a *Access) httpPost(path string, v interface{}) error {
 	}
 
 	return err
+}
+
+func (a *Access) authorizeRequest(req *http.Request) {
+	if a.password != "" {
+		req.Header.Set("x-ha-access", a.password)
+	}
+
+	if a.token != "" {
+		req.Header.Set("X-HASSIO-KEY", a.token)
+	}
+
+	if a.bearertoken != "" {
+		req.Header.Set("Authorization", a.bearertoken)
+	}
 }
