@@ -58,8 +58,6 @@ func (a *Access) SetBearerToken(token string) {
 
 func (a *Access) httpGet(path string, v interface{}) error {
 	req, err := http.NewRequest("GET", a.host+path, nil)
-	println(a.host + path)
-
 	if err != nil {
 		return err
 	}
