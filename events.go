@@ -47,31 +47,19 @@ type StateChangedEvent struct {
 	TimeFired time.Time `json:"time_fired"`
 	Data      struct {
 		OldState struct {
-			EntityID    string    `json:"entity_id"`
-			State       string    `json:"state"`
-			LastChanged time.Time `json:"last_changed"`
-			LastUpdated time.Time `json:"last_updated"`
-			Attributes  struct {
-				EntityID     []string `json:"entity_id"`
-				Order        int      `json:"order"`
-				Hidden       bool     `json:"hidden"`
-				FriendlyName string   `json:"friendly_name"`
-				Auto         bool     `json:"auto"`
-			} `json:"attributes"`
+			EntityID    string          `json:"entity_id"`
+			State       string          `json:"state"`
+			LastChanged time.Time       `json:"last_changed"`
+			LastUpdated time.Time       `json:"last_updated"`
+			Attributes  StateAttributes `json:"attributes"`
 		} `json:"old_state"`
 		EntityID string `json:"entity_id"`
 		NewState struct {
-			EntityID    string    `json:"entity_id"`
-			State       string    `json:"state"`
-			LastChanged time.Time `json:"last_changed"`
-			LastUpdated time.Time `json:"last_updated"`
-			Attributes  struct {
-				EntityID     []string `json:"entity_id"`
-				Order        int      `json:"order"`
-				Hidden       bool     `json:"hidden"`
-				FriendlyName string   `json:"friendly_name"`
-				Auto         bool     `json:"auto"`
-			} `json:"attributes"`
+			EntityID    string          `json:"entity_id"`
+			State       string          `json:"state"`
+			LastChanged time.Time       `json:"last_changed"`
+			LastUpdated time.Time       `json:"last_updated"`
+			Attributes  StateAttributes `json:"attributes"`
 		} `json:"new_state"`
 	} `json:"data"`
 }
