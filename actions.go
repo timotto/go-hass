@@ -59,7 +59,13 @@ func (a *Access) CallService(domain, service, entityID string) error {
 	serviceData := struct {
 		EntityID string `json:"entity_id"`
 	}{entityID}
-	return a.httpPost("/api/services/"+domain+"/"+service, serviceData)
+
+	return a.CallServiceWith(domain, service, serviceData)
+}
+
+// CallServiceWith calls a service with a domain, service, and given body.
+func (a *Access) CallServiceWith(domain, service string, data any) error {
+	return a.httpPost("/api/services/"+domain+"/"+service, data)
 }
 
 // ListStates gets an array of state objects
